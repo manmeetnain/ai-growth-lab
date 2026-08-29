@@ -21,6 +21,19 @@ npm install
 npm run build
 ```
 
+## Development
+
+```bash
+npm test   # builds, then runs the test suite (node --test) against dist/
+```
+
+Implemented so far: `createLegacyHandshakeResponder` (`src/legacy.ts`) — the legacy
+`2025-11-25` `initialize`/`Mcp-Session-Id` handshake path, multiplexing concurrent sessions
+over one HTTP endpoint on top of the SDK's own `StreamableHTTPServerTransport`, left
+otherwise untouched per the RFC #2597 pattern. The stateless `2026-07-28` path and the
+`continuum()` wrapper that routes between the two land in upcoming checklist items — see
+[`../ROADMAP.md`](../ROADMAP.md).
+
 ## License
 
 MIT — see [`LICENSE`](./LICENSE) (points to the root [`../LICENSE`](../LICENSE)).
