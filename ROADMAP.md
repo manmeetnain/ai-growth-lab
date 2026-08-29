@@ -4,45 +4,47 @@ Dates below are relative — start counting from whatever day you actually begin
 build task, one content task, one outreach/network task. Don't skip content or outreach even in
 "pure build" weeks — a single post/DM per week is enough to keep the flywheel turning.
 
-## Days 1-14 — Build the MVP (Weeks 1-2)
+## Days 0-3 — Prep
 
-- Week 1: Name it. Set up the repo (public, MIT/Apache-2.0 license, real README from day one —
-  even a placeholder README with the vision sells the repo before code exists). Build the
-  scenario format + runner skeleton against one agent target (pick Claude Agent SDK or a public
-  MCP server — see CAPSTONE.md).
-- Week 2: Write the first 15-20 scenarios. Get the report output working end-to-end on a real
-  agent. Do not polish — get one full run producing a real report.
-- Content: 2-3 build-in-public posts (X/LinkedIn) — "building an eval harness for agents because
-  X problem," short and specific, not a launch yet.
-- Outreach: none required yet — nothing to show. Start a short list in TARGETS.md of who you'll
-  approach once there's a demo (this is prep, not outreach).
+- Read the full MCP 2026-07-28 spec diff and the Microsoft RFC #2597 thread closely enough to
+  restate the sanctioned dual-stack pattern from memory. Pick the exact TS SDK/version to target.
+  Set up the repo (MIT license, README opening with the 90.8%-not-ready stat from day one).
+
+## Days 4-14 — Build the MVP (Weeks 1-2)
+
+- Week 1: Build the compatibility middleware core — answer both the legacy `initialize` handshake
+  and the new `server/discover` flow, normalized into the shape the server's existing handlers
+  already expect (see CAPSTONE.md for the exact approach).
+- Week 2: Build the verification probe (simulated legacy + new-spec clients, full tool-call round
+  trip against each). Get one real open-source MCP server fully passing both checks end to end.
+- Content: 2-3 build-in-public posts — "fixing the MCP dual-stack migration gap Microsoft's own
+  RFC flagged as unsolved," short and specific, not a launch yet.
+- Outreach: none required yet — nothing to show. Re-read DISTRIBUTION.md's Tier 1 so the RFC
+  comment is ready to write the moment there's something real to link.
 
 ## Days 15-28 — First public run + launch (Weeks 3-4)
 
-- Week 3: Run the tool against 1-2 well-known public agents/MCP servers. Record the 90-second
-  demo video from CAPSTONE.md. Write it up as a short post: what broke, why, how the tool caught
-  it.
-- Week 4: Launch. Post the writeup + video (X, LinkedIn, relevant subreddit/Discord/Slack
-  communities for agent builders, Hacker News "Show HN" if the tool is genuinely ready). Submit
-  to at least one AI tool directory/newsletter.
-- Outreach: send the first 5 messages from OUTREACH.md's "beta access" template to companies in
-  TARGETS.md — lead with the demo video/writeup, not a request.
-- Checkpoint: if the launch gets near-zero engagement (no stars, no replies, no DMs), that's
-  signal — read it honestly before week 5, and consider adjusting the angle (not necessarily the
-  whole idea) rather than ignoring it.
+- Week 3: Apply Continuum to 3-5 more real open-source MCP servers, publish before/after. Record
+  the 90-second demo (numbers on screen, per CAPSTONE.md — no narration needed). Write the
+  migration guide.
+- Week 4: Launch per DISTRIBUTION.md, in order — comment on Microsoft RFC #2597 and the fastmcp
+  migration issue with the working solution FIRST, then registries/awesome-lists/Discord/Reddit,
+  then Show HN and X/LinkedIn.
+- Checkpoint: if the launch gets near-zero engagement (no stars, no replies, no RFC response),
+  that's signal — read it honestly before week 5, and consider adjusting the angle (not
+  necessarily the whole idea) rather than ignoring it.
 
 ## Days 29-42 — Iterate on real feedback (Weeks 5-6)
 
 - Week 5: Fix the top 2-3 things people actually asked for or complained about (real feedback >
-  your own guesses). Add scenarios for a second agent framework/MCP target if there's demand for
-  it specifically.
-- Week 6: Start the CI-integration or hosted-dashboard v2 only if week 3-4 signal justifies it.
-  Otherwise keep deepening the CLI/scenario library — more real, well-documented failure cases is
-  higher leverage than a dashboard nobody asked for yet.
-- Content: one deeper technical post — the methodology behind the scenarios (this is the post
-  that gets you taken seriously by practitioners, distinct from the launch hype post).
-- Outreach: follow up on week 4's 5 messages. Send 5 more. Start applying to 1-2 relevant
-  webinar/meetup speaking slots (TARGETS.md) using the demo video as your pitch reel.
+  your own guesses). Start the Python SDK port only if there's real demand for it specifically.
+- Week 6: Re-run the registry-wide readiness scan (per DISTRIBUTION.md's "ongoing" section) and
+  post the updated percentage — the first recurring content hook.
+- Content: one deeper technical post — the exact compatibility approach and what broke in
+  real-world servers (this is the post that gets you taken seriously by practitioners, distinct
+  from the launch hype post).
+- Outreach: follow up on the RFC/registry conversations from week 4. Start applying to 1-2
+  relevant webinar/meetup speaking slots (TARGETS.md) using the demo video as your pitch reel.
 
 ## Days 43-60 — Day-60 checkpoint (Weeks 7-8, + checkpoint)
 
