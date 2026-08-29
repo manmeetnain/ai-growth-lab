@@ -11,8 +11,8 @@ The bet: instead of scattering effort across many small projects, everything rou
 
 **Current capstone: [Continuum](CAPSTONE.md)** — an open-source middleware that lets an MCP server
 speak both the legacy and the new (2026-07-28) protocol spec at once during the migration window,
-plus a probe that proves it works. Code for Continuum itself will live in its own repo once the
-build starts; this repo is the strategy, planning, and launch record behind it.
+plus a probe that proves it works. Code lives in this same repo, under `continuum/`, once the
+build starts — this README and the planning docs sit alongside it, not in a separate repo.
 
 ## Files in this folder
 
