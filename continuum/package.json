@@ -1,0 +1,49 @@
+{
+  "name": "mcp-continuum",
+  "version": "0.1.0",
+  "description": "Dual-stack compatibility middleware for MCP servers: answer both the legacy 2025-11-25 handshake and the new 2026-07-28 stateless spec at once, plus a probe that proves both work.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist"
+  },
+  "license": "MIT",
+  "author": "Manmeet Nain",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manmeetnain/ai-growth-lab.git",
+    "directory": "continuum"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "middleware",
+    "migration",
+    "compatibility"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@modelcontextprotocol/core": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
+    "@modelcontextprotocol/node": "^2.0.0",
+    "zod": "^4.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/node": "^22.10.0"
+  }
+}

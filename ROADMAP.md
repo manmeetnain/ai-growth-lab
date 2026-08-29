@@ -13,7 +13,7 @@ they're next in line.
 
 - [x] Read the MCP 2026-07-28 spec diff and Microsoft RFC #2597 closely enough to restate the
       dual-stack pattern from memory; pick the exact TS SDK/version to target.
-- [ ] Scaffold `continuum/` in this repo: `package.json`, `tsconfig.json`, `src/`, MIT license
+- [x] Scaffold `continuum/` in this repo: `package.json`, `tsconfig.json`, `src/`, MIT license
       reference, minimal README stub.
 - [ ] Implement the legacy `initialize`/`Mcp-Session-Id` handshake responder in the middleware.
 - [ ] Implement the new `server/discover`/stateless flow responder, normalized to the same
