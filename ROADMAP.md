@@ -11,7 +11,7 @@ checks it off, commits, and stops. Everything below "LAUNCH GATE" requires the h
 go-ahead first — the agent should stop and report instead of doing those unprompted, even once
 they're next in line.
 
-- [ ] Read the MCP 2026-07-28 spec diff and Microsoft RFC #2597 closely enough to restate the
+- [x] Read the MCP 2026-07-28 spec diff and Microsoft RFC #2597 closely enough to restate the
       dual-stack pattern from memory; pick the exact TS SDK/version to target.
 - [ ] Scaffold `continuum/` in this repo: `package.json`, `tsconfig.json`, `src/`, MIT license
       reference, minimal README stub.
