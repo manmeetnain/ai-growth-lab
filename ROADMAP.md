@@ -30,7 +30,7 @@ they're next in line.
       header differences between spec versions.
 - [x] Write `continuum/README.md` as the real migration guide, opening with the 90.8%-not-ready
       stat and the one-import before/after example.
-- [ ] Write the 90-second demo script/shot list (numbers on screen, per CAPSTONE.md) — recording
+- [x] Write the 90-second demo script/shot list (numbers on screen, per CAPSTONE.md) — recording
       itself is on the human, not the agent.
 
 **— LAUNCH GATE: everything below requires explicit human approval before it happens —**
