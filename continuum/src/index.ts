@@ -19,3 +19,10 @@ export {
   type ContinuumOptions,
   type Continuum,
 } from "./continuum.js";
+
+export {
+  runLegacyClientProbe,
+  type LegacyProbeOptions,
+  type LegacyProbeStep,
+  type LegacyProbeResult,
+} from "./probe.js";
