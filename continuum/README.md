@@ -9,7 +9,8 @@ round trip against it.
 Status: early scaffold, not yet published or functional. See [`../CAPSTONE.md`](../CAPSTONE.md)
 for the full design and motivation, and [`RESEARCH.md`](./RESEARCH.md) for the spec/RFC research
 and SDK version decisions this build targets. Follow [`../ROADMAP.md`](../ROADMAP.md)'s "Build
-pipeline checklist" for current build status.
+pipeline checklist" for current build status, and [`COMPATIBILITY.md`](./COMPATIBILITY.md) for
+results applying Continuum to real open-source MCP servers (`src/examples/`).
 
 ## Install
 

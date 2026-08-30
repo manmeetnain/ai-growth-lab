@@ -24,7 +24,7 @@ they're next in line.
 - [x] Extend the probe: simulated new-spec client completing the same round trip.
 - [x] Get one real open-source MCP server (pick one, note which in the commit) fully passing both
       probe checks end to end.
-- [ ] Apply Continuum to 3-5 more real open-source MCP servers; note results in
+- [x] Apply Continuum to 3-5 more real open-source MCP servers; note results in
       `continuum/COMPATIBILITY.md`.
 - [ ] Handle the remaining edge cases: the three deprecated primitives, remapped error codes, auth
       header differences between spec versions.
