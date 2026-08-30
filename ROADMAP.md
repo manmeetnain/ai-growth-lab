@@ -22,7 +22,7 @@ they're next in line.
       preview artifact (wraps an existing server, no rewrite of its handlers).
 - [x] Build the verification probe: simulated legacy client completing a full tool-call round trip.
 - [x] Extend the probe: simulated new-spec client completing the same round trip.
-- [ ] Get one real open-source MCP server (pick one, note which in the commit) fully passing both
+- [x] Get one real open-source MCP server (pick one, note which in the commit) fully passing both
       probe checks end to end.
 - [ ] Apply Continuum to 3-5 more real open-source MCP servers; note results in
       `continuum/COMPATIBILITY.md`.
