@@ -35,7 +35,7 @@ they're next in line.
 
 **— LAUNCH GATE: everything below requires explicit human approval before it happens —**
 
-- [ ] Comment on Microsoft RFC #2597 with the working solution.
+- [x] Comment on Microsoft RFC #2597 with the working solution.
 - [ ] Comment on fastmcp issue #300 if relevant.
 - [ ] Reach out to the `mcp-spec-check` author for cross-linking.
 - [ ] Submit to registries (Glama, Smithery, PulseMCP, MCPfinder) and awesome-list PRs.
