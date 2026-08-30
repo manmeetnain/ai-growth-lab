@@ -3,19 +3,28 @@
  * exercises a Continuum-wrapped server exactly the way a real MCP client would — over the
  * wire, against a URL — so a maintainer (or the future `mcp-continuum` CLI) can point it at
  * their own running server and get a pass/fail report instead of having to trust the
- * library on faith. This module covers the first checklist step: a simulated **legacy**
+ * library on faith. This module covers both checklist steps: a simulated **legacy**
  * (2025-11-25) client completing a full `initialize` -> `notifications/initialized` ->
- * `tools/call` round trip. The matching modern-client probe is the next checklist item.
+ * `tools/call` round trip (`runLegacyClientProbe`), and a simulated **modern** (2026-07-28)
+ * client completing the equivalent stateless round trip (`runModernClientProbe`).
  *
- * Deliberately framework-agnostic: it only needs a URL to POST JSON-RPC at, so it works
- * whether the target is `createLegacyHandshakeResponder` alone or a full `continuum()`
- * wrapper (the fastmcp-style servers CAPSTONE.md's worked examples will target expose the
- * same wire behavior either way).
+ * Deliberately framework-agnostic: each probe only needs a URL to POST JSON-RPC at, so both
+ * work whether the target is a single responder alone or a full `continuum()` wrapper (the
+ * fastmcp-style servers CAPSTONE.md's worked examples will target expose the same wire
+ * behavior either way).
  */
 import { LATEST_PROTOCOL_VERSION } from "@modelcontextprotocol/sdk/types.js";
+import {
+  PROTOCOL_VERSION_META_KEY,
+  CLIENT_CAPABILITIES_META_KEY,
+  CLIENT_INFO_META_KEY,
+} from "@modelcontextprotocol/server";
 
 /** Header the 2025-11-25 spec uses to carry the session id (case-insensitive over HTTP). */
 const MCP_SESSION_ID_HEADER = "mcp-session-id";
+
+/** The 2026-07-28 wire revision literal (not exported publicly by the SDK — mirrors modern.ts / modern.test.ts). */
+const MODERN_PROTOCOL_VERSION = "2026-07-28";
 
 export interface LegacyProbeOptions {
   /** URL of the already-running MCP endpoint to probe, e.g. `"http://localhost:3000/mcp"`. */
@@ -182,5 +191,159 @@ export async function runLegacyClientProbe(options: LegacyProbeOptions): Promise
   } catch (error) {
     steps.push({ name: "tools/call", ok: false, detail: (error as Error).message });
     return { ok: false, steps, sessionId, protocolVersion };
+  }
+}
+
+export interface ModernProbeOptions {
+  /** URL of the already-running MCP endpoint to probe, e.g. `"http://localhost:3000/mcp"`. */
+  url: string;
+  /**
+   * Name of a tool registered on the target server to invoke, proving a full round trip
+   * (not just discovery). The tool is called with no arguments unless `toolArguments` is set.
+   */
+  toolName: string;
+  /** Arguments passed to `toolName`. Defaults to `{}`. */
+  toolArguments?: Record<string, unknown>;
+  /** Client identity sent in each request's `_meta` envelope. Defaults to a generic probe identity. */
+  clientInfo?: { name: string; version: string };
+  /** Overridable for tests; defaults to the global `fetch`. */
+  fetchImpl?: typeof fetch;
+}
+
+export interface ModernProbeStep {
+  /** Short name of the protocol step this row reports on. */
+  name: "server/discover" | "tools/call";
+  ok: boolean;
+  /** Human-readable detail — the failure reason when `ok` is false, or a short success note. */
+  detail: string;
+}
+
+export interface ModernProbeResult {
+  /** True only if every step in `steps` succeeded. */
+  ok: boolean;
+  /** One row per protocol step attempted, in order; a later step is skipped after a failure. */
+  steps: ModernProbeStep[];
+  /** Protocol versions the server advertised via `server/discover`, once obtained. */
+  supportedVersions?: string[];
+  /** The `tools/call` result payload, once obtained. */
+  toolResult?: unknown;
+}
+
+/**
+ * Every 2026-07-28 request carries its own envelope in `_meta` — there is no shared
+ * handshake to reuse, so this is built fresh for each request (mirrors modern.test.ts).
+ */
+function modernEnvelope(clientInfo: { name: string; version: string }): Record<string, unknown> {
+  return {
+    [PROTOCOL_VERSION_META_KEY]: MODERN_PROTOCOL_VERSION,
+    [CLIENT_CAPABILITIES_META_KEY]: {},
+    [CLIENT_INFO_META_KEY]: clientInfo,
+  };
+}
+
+/**
+ * Simulates a modern (2026-07-28) MCP client end to end against a live server: calls
+ * `server/discover` to confirm the server advertises the modern revision, then calls
+ * `toolName` and confirms it round-trips a real result — the stateless equivalent of
+ * `runLegacyClientProbe`'s three-step exchange, minus any handshake or session state,
+ * since every 2026-07-28 request is self-contained (protocol version, client identity, and
+ * capabilities travel in that request's own `_meta`; see RESEARCH.md). Also sends the
+ * `Mcp-Method`/`Mcp-Name` header-based-routing headers per SEP-2243 (mirrors modern.test.ts),
+ * since a real gateway-fronted server may route on them before ever parsing the JSON body.
+ *
+ * Never throws: every failure (network, HTTP status, JSON-RPC error, malformed body, or an
+ * unexpected `resultType`) is captured as a failed step in the returned report, so a caller
+ * (the future probe CLI, or a worked-example script) can render a pass/fail summary without
+ * a try/catch of its own.
+ */
+export async function runModernClientProbe(options: ModernProbeOptions): Promise<ModernProbeResult> {
+  const fetchImpl = options.fetchImpl ?? fetch;
+  const clientInfo = options.clientInfo ?? { name: "mcp-continuum-modern-probe", version: "0.1.0" };
+  const steps: ModernProbeStep[] = [];
+
+  const baseHeaders: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json, text/event-stream",
+  };
+
+  // Step 1: server/discover — optional capability discovery; establishes no session/state.
+  let supportedVersions: string[] | undefined;
+  try {
+    const res = await fetchImpl(options.url, {
+      method: "POST",
+      headers: { ...baseHeaders, "Mcp-Method": "server/discover" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "server/discover",
+        params: { _meta: modernEnvelope(clientInfo) },
+      }),
+    });
+    if (!res.ok) {
+      steps.push({ name: "server/discover", ok: false, detail: `HTTP ${res.status}` });
+      return { ok: false, steps };
+    }
+    const body = await readJsonRpcResponse(res);
+    if (body?.error) {
+      steps.push({ name: "server/discover", ok: false, detail: `JSON-RPC error: ${JSON.stringify(body.error)}` });
+      return { ok: false, steps };
+    }
+    supportedVersions = body?.result?.supportedVersions;
+    if (body?.result?.resultType !== "complete" || !supportedVersions?.includes(MODERN_PROTOCOL_VERSION)) {
+      steps.push({
+        name: "server/discover",
+        ok: false,
+        detail: `server did not advertise ${MODERN_PROTOCOL_VERSION} as supported: ${JSON.stringify(body?.result)}`,
+      });
+      return { ok: false, steps, supportedVersions };
+    }
+    steps.push({ name: "server/discover", ok: true, detail: `supportedVersions: ${JSON.stringify(supportedVersions)}` });
+  } catch (error) {
+    steps.push({ name: "server/discover", ok: false, detail: (error as Error).message });
+    return { ok: false, steps };
+  }
+
+  // Step 2: tools/call — proves a full round trip; carries its own envelope, no session to reuse.
+  try {
+    const res = await fetchImpl(options.url, {
+      method: "POST",
+      headers: { ...baseHeaders, "Mcp-Method": "tools/call", "Mcp-Name": options.toolName },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 2,
+        method: "tools/call",
+        params: {
+          name: options.toolName,
+          arguments: options.toolArguments ?? {},
+          _meta: modernEnvelope(clientInfo),
+        },
+      }),
+    });
+    if (!res.ok) {
+      steps.push({ name: "tools/call", ok: false, detail: `HTTP ${res.status}` });
+      return { ok: false, steps, supportedVersions };
+    }
+    const body = await readJsonRpcResponse(res);
+    if (body?.error) {
+      steps.push({ name: "tools/call", ok: false, detail: `JSON-RPC error: ${JSON.stringify(body.error)}` });
+      return { ok: false, steps, supportedVersions };
+    }
+    // As with the legacy probe, a tool that failed to run still comes back as a JSON-RPC
+    // *success* — checked separately from the `resultType` discriminator below, which the
+    // 2026-07-28 spec requires on every result (see src-CX2iR2pK.mjs in
+    // @modelcontextprotocol/server: absent/non-"complete" resultType is itself invalid).
+    if (body?.result?.isError) {
+      steps.push({ name: "tools/call", ok: false, detail: `tool error: ${JSON.stringify(body.result)}` });
+      return { ok: false, steps, supportedVersions, toolResult: body.result };
+    }
+    if (body?.result?.resultType !== "complete") {
+      steps.push({ name: "tools/call", ok: false, detail: `unexpected resultType: ${JSON.stringify(body?.result)}` });
+      return { ok: false, steps, supportedVersions, toolResult: body?.result };
+    }
+    steps.push({ name: "tools/call", ok: true, detail: `tool "${options.toolName}" returned a result` });
+    return { ok: true, steps, supportedVersions, toolResult: body?.result };
+  } catch (error) {
+    steps.push({ name: "tools/call", ok: false, detail: (error as Error).message });
+    return { ok: false, steps, supportedVersions };
   }
 }

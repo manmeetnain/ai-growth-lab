@@ -4,8 +4,9 @@ import { test } from "node:test";
 import { McpServer as LegacyMcpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { McpServer as ModernMcpServer } from "@modelcontextprotocol/server";
 import { continuum } from "./continuum.js";
+import { createLegacyHandshakeResponder } from "./legacy.js";
 import { createStatelessResponder } from "./modern.js";
-import { runLegacyClientProbe } from "./probe.js";
+import { runLegacyClientProbe, runModernClientProbe } from "./probe.js";
 
 function makeLegacyServer(): LegacyMcpServer {
   const server = new LegacyMcpServer({ name: "continuum-probe-test-server", version: "0.0.0" });
@@ -103,5 +104,66 @@ test("runLegacyClientProbe: a network failure is captured as a failed step, not 
   assert.equal(result.ok, false);
   assert.equal(result.steps.length, 1);
   assert.equal(result.steps[0].name, "initialize");
+  assert.equal(result.steps[0].ok, false);
+});
+
+test("runModernClientProbe: a full round trip against a continuum-wrapped server passes every step", async () => {
+  const wrapper = continuum({ createLegacyServer: makeLegacyServer, createModernServer: makeModernServer });
+  const { url, http } = await startHttpServer((req, res, body) => wrapper.handleRequest(req, res, body));
+  try {
+    const result = await runModernClientProbe({ url, toolName: "ping" });
+    assert.equal(result.ok, true);
+    assert.equal(result.steps.length, 2);
+    assert.ok(result.steps.every((step) => step.ok));
+    assert.ok(result.supportedVersions?.includes("2026-07-28"));
+    // The modern path is stateless — it never registers a legacy session.
+    assert.equal(wrapper.legacySessionCount, 0);
+    assert.deepEqual((result.toolResult as any).content[0].text, "pong");
+  } finally {
+    await wrapper.close();
+    http.close();
+  }
+});
+
+test("runModernClientProbe: an unknown tool fails the tools/call step but reports server/discover as passing", async () => {
+  const wrapper = continuum({ createLegacyServer: makeLegacyServer, createModernServer: makeModernServer });
+  const { url, http } = await startHttpServer((req, res, body) => wrapper.handleRequest(req, res, body));
+  try {
+    const result = await runModernClientProbe({ url, toolName: "does-not-exist" });
+    assert.equal(result.ok, false);
+    const [discoverStep, toolStep] = result.steps;
+    assert.equal(discoverStep.ok, true);
+    assert.equal(toolStep.name, "tools/call");
+    assert.equal(toolStep.ok, false);
+    assert.match(toolStep.detail, /error/i);
+  } finally {
+    await wrapper.close();
+    http.close();
+  }
+});
+
+test("runModernClientProbe: a server that only speaks the legacy sessionful path fails at server/discover", async () => {
+  const responder = createLegacyHandshakeResponder({ createServer: makeLegacyServer });
+  const { url, http } = await startHttpServer((req, res, body) => responder.handleRequest(req, res, body));
+  try {
+    const result = await runModernClientProbe({ url, toolName: "ping" });
+    assert.equal(result.ok, false);
+    assert.equal(result.steps.length, 1);
+    assert.equal(result.steps[0].name, "server/discover");
+    assert.equal(result.steps[0].ok, false);
+  } finally {
+    await responder.close();
+    http.close();
+  }
+});
+
+test("runModernClientProbe: a network failure is captured as a failed step, not thrown", async () => {
+  const result = await runModernClientProbe({
+    url: "http://127.0.0.1:1/mcp",
+    toolName: "ping",
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.steps.length, 1);
+  assert.equal(result.steps[0].name, "server/discover");
   assert.equal(result.steps[0].ok, false);
 });

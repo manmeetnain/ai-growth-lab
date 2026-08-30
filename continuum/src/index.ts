@@ -25,4 +25,8 @@ export {
   type LegacyProbeOptions,
   type LegacyProbeStep,
   type LegacyProbeResult,
+  runModernClientProbe,
+  type ModernProbeOptions,
+  type ModernProbeStep,
+  type ModernProbeResult,
 } from "./probe.js";
