@@ -21,6 +21,19 @@ export {
 } from "./continuum.js";
 
 export {
+  LEGACY_SAFE_ERROR_CODE,
+  toLegacyCompatibleError,
+  wrapForLegacyErrors,
+} from "./errors.js";
+
+export {
+  authenticateBearerRequest,
+  type AuthInfo,
+  type AuthVerifier,
+  type BearerAuthOptions,
+} from "./auth.js";
+
+export {
   runLegacyClientProbe,
   type LegacyProbeOptions,
   type LegacyProbeStep,

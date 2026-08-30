@@ -66,6 +66,21 @@ Implemented so far:
   server construction is. A single shared factory isn't possible at the type level: the
   legacy and modern `McpServer` are distinct classes from different SDK packages with no
   common base type (documented in `src/continuum.ts`).
+- Edge-case hardening (`src/errors.ts`, `src/auth.ts`) — see each file's doc comment for the
+  full, SDK-grounded reasoning:
+  - **Remapped error codes**: `toLegacyCompatibleError`/`wrapForLegacyErrors` normalize a
+    modern-only error code (`MissingRequiredClientCapability`, `UnsupportedProtocolVersion`)
+    thrown from shared tool/resource logic into the nearest legacy-legal JSON-RPC code before
+    it reaches a `2025-11-25` client, preserving the original code under
+    `data.continuumOriginalErrorCode`.
+  - **Auth header differences**: `authenticateBearerRequest` is one raw-`node:http` Bearer-token
+    gate — both spec generations already agree on the same `Authorization`/`WWW-Authenticate`
+    wire convention, so `continuum()`'s optional `auth` option applies it once, ahead of the
+    legacy/modern routing decision, instead of two divergent per-generation auth paths.
+  - **Deprecated primitives** (Roots, Sampling, Logging): both SDK generations already keep these
+    working without any Continuum involvement; `logging/setLevel` is verified round-tripping
+    through the legacy path in `continuum.test.ts` (the modern generation's own wire codec no
+    longer routes this deprecated method to any client, confirmed against the installed SDK).
 
 ## License
 

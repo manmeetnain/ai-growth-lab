@@ -26,7 +26,7 @@ they're next in line.
       probe checks end to end.
 - [x] Apply Continuum to 3-5 more real open-source MCP servers; note results in
       `continuum/COMPATIBILITY.md`.
-- [ ] Handle the remaining edge cases: the three deprecated primitives, remapped error codes, auth
+- [x] Handle the remaining edge cases: the three deprecated primitives, remapped error codes, auth
       header differences between spec versions.
 - [ ] Write `continuum/README.md` as the real migration guide, opening with the 90.8%-not-ready
       stat and the one-import before/after example.

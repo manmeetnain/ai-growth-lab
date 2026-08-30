@@ -27,6 +27,7 @@ import {
   type LegacyHandshakeOptions,
 } from "./legacy.js";
 import { createStatelessResponder, type StatelessResponderOptions } from "./modern.js";
+import { authenticateBearerRequest, type BearerAuthOptions } from "./auth.js";
 
 export interface ContinuumOptions {
   /** Builds a fresh legacy-generation (`@modelcontextprotocol/sdk@1.x`) `McpServer` per session. */
@@ -37,6 +38,14 @@ export interface ContinuumOptions {
   sessionIdGenerator?: LegacyHandshakeOptions["sessionIdGenerator"];
   /** Forwarded to the modern responder as a reporting-only hook for out-of-band errors. */
   onerror?: StatelessResponderOptions["onerror"];
+  /**
+   * Optional Bearer-token gate applied to every request *before* the
+   * legacy/modern routing decision (see auth.ts) — both spec generations
+   * agree on the same `Authorization`/`WWW-Authenticate` wire convention, so
+   * one gate covers both paths uniformly instead of two divergent ones.
+   * Omit to leave the endpoint unauthenticated.
+   */
+  auth?: BearerAuthOptions;
 }
 
 export interface Continuum {
@@ -70,6 +79,12 @@ export function continuum(options: ContinuumOptions): Continuum {
   }
 
   async function handleRequest(req: IncomingMessage, res: ServerResponse, parsedBody: unknown): Promise<void> {
+    if (options.auth) {
+      const authInfo = await authenticateBearerRequest(req, res, options.auth);
+      if (!authInfo) {
+        return; // authenticateBearerRequest already wrote the WWW-Authenticate challenge.
+      }
+    }
     if (isLegacyRequest(req, parsedBody)) {
       await legacy.handleRequest(req, res, parsedBody);
     } else {
