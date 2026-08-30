@@ -28,7 +28,7 @@ they're next in line.
       `continuum/COMPATIBILITY.md`.
 - [x] Handle the remaining edge cases: the three deprecated primitives, remapped error codes, auth
       header differences between spec versions.
-- [ ] Write `continuum/README.md` as the real migration guide, opening with the 90.8%-not-ready
+- [x] Write `continuum/README.md` as the real migration guide, opening with the 90.8%-not-ready
       stat and the one-import before/after example.
 - [ ] Write the 90-second demo script/shot list (numbers on screen, per CAPSTONE.md) — recording
       itself is on the human, not the agent.
