@@ -1,7 +1,7 @@
 # Capstone: Continuum — MCP Dual-Stack Compatibility Layer
 
-(Working name: **Continuum**. Package name candidate: `mcp-continuum`. Tagline: "One server. Both
-specs. Zero-downtime migration.")
+(Working name: **Continuum**. Package name candidate: `mcp-continuum`. Tagline: "One server, dual-
+protocol compatibility, zero-downtime migration.")
 
 Chosen 2026-08-29, replacing the earlier agent-evals-toolkit idea (kept below under
 Alternatives — same folder, same strategy, different flagship).
