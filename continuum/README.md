@@ -27,12 +27,21 @@ npm run build
 npm test   # builds, then runs the test suite (node --test) against dist/
 ```
 
-Implemented so far: `createLegacyHandshakeResponder` (`src/legacy.ts`) — the legacy
-`2025-11-25` `initialize`/`Mcp-Session-Id` handshake path, multiplexing concurrent sessions
-over one HTTP endpoint on top of the SDK's own `StreamableHTTPServerTransport`, left
-otherwise untouched per the RFC #2597 pattern. The stateless `2026-07-28` path and the
-`continuum()` wrapper that routes between the two land in upcoming checklist items — see
-[`../ROADMAP.md`](../ROADMAP.md).
+Implemented so far:
+- `createLegacyHandshakeResponder` (`src/legacy.ts`) — the legacy `2025-11-25`
+  `initialize`/`Mcp-Session-Id` handshake path, multiplexing concurrent sessions over one
+  HTTP endpoint on top of the SDK's own `StreamableHTTPServerTransport`, left otherwise
+  untouched per the RFC #2597 pattern.
+- `createStatelessResponder` (`src/modern.ts`) — the new `2026-07-28` stateless path: every
+  request carries its own protocol version, client identity, and capabilities in that
+  request's own `_meta` envelope (no handshake, no session state), built on
+  `@modelcontextprotocol/server`'s `createMcpHandler` in `legacy: 'reject'` mode so this
+  responder only ever serves modern-envelope traffic.
+
+Both responders share the same `createServer: () => McpServer`-per-unit options shape on
+purpose, so the `continuum()` wrapper that routes between the two (the next checklist item —
+see [`../ROADMAP.md`](../ROADMAP.md)) can hand one tool/resource registration function to
+both instead of maintaining two divergent registration call sites.
 
 ## License
 

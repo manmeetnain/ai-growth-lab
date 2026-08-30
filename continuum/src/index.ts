@@ -7,3 +7,9 @@ export {
   type LegacyHandshakeOptions,
   type LegacyHandshakeResponder,
 } from "./legacy.js";
+
+export {
+  createStatelessResponder,
+  type StatelessResponderOptions,
+  type StatelessResponder,
+} from "./modern.js";

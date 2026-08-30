@@ -16,7 +16,7 @@ they're next in line.
 - [x] Scaffold `continuum/` in this repo: `package.json`, `tsconfig.json`, `src/`, MIT license
       reference, minimal README stub.
 - [x] Implement the legacy `initialize`/`Mcp-Session-Id` handshake responder in the middleware.
-- [ ] Implement the new `server/discover`/stateless flow responder, normalized to the same
+- [x] Implement the new `server/discover`/stateless flow responder, normalized to the same
       internal request shape as the legacy path.
 - [ ] Wire both paths into a single `continuum()` wrapper function per the diff shown in the
       preview artifact (wraps an existing server, no rewrite of its handlers).
