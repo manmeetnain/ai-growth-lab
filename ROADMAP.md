@@ -48,8 +48,8 @@ they're next in line.
       PulseMCP submissions are paused regardless. Forcing a listing would likely be rejected or
       look out of place.
 - [x] Publish to npm.
-- [ ] Post in MCP Discord communities and r/mcp.
-- [ ] Show HN / X / LinkedIn / newsletter submissions.
+- [x] Post in MCP Discord communities and r/mcp.
+- [x] Show HN / X / LinkedIn / newsletter submissions.
 
 ## Days 0-3 — Prep
 
