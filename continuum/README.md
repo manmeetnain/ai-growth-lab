@@ -37,11 +37,34 @@ Implemented so far:
   request's own `_meta` envelope (no handshake, no session state), built on
   `@modelcontextprotocol/server`'s `createMcpHandler` in `legacy: 'reject'` mode so this
   responder only ever serves modern-envelope traffic.
+- `continuum()` (`src/continuum.ts`) — wires both of the above behind one HTTP endpoint.
+  Routes each request with an `isLegacyRequest()`-style check (does it carry a session id
+  this instance already issued, or is it an `initialize` call? → legacy; otherwise →
+  modern) and never touches either responder's own logic to do it.
 
-Both responders share the same `createServer: () => McpServer`-per-unit options shape on
-purpose, so the `continuum()` wrapper that routes between the two (the next checklist item —
-see [`../ROADMAP.md`](../ROADMAP.md)) can hand one tool/resource registration function to
-both instead of maintaining two divergent registration call sites.
+  ```ts
+  import { continuum } from "mcp-continuum";
+  import { McpServer as LegacyMcpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+  import { McpServer as ModernMcpServer } from "@modelcontextprotocol/server";
+
+  const wrapper = continuum({
+    // One factory per SDK generation — see the note below on why there are two.
+    createLegacyServer: () => registerHandlers(new LegacyMcpServer({ name: "my-server", version: "1.0.0" })),
+    createModernServer: () => registerHandlers(new ModernMcpServer({ name: "my-server", version: "1.0.0" })),
+  });
+
+  http.createServer((req, res) => {
+    // read/parse the body yourself, then:
+    wrapper.handleRequest(req, res, parsedBody);
+  });
+  ```
+
+  Both SDK generations' `McpServer` classes expose the same `registerTool(name, config,
+  handler)` surface, so `registerHandlers` above is written once and called from inside
+  both factories — the actual tool/resource logic is never duplicated, only the two-line
+  server construction is. A single shared factory isn't possible at the type level: the
+  legacy and modern `McpServer` are distinct classes from different SDK packages with no
+  common base type (documented in `src/continuum.ts`).
 
 ## License
 

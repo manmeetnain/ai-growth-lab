@@ -13,3 +13,9 @@ export {
   type StatelessResponderOptions,
   type StatelessResponder,
 } from "./modern.js";
+
+export {
+  continuum,
+  type ContinuumOptions,
+  type Continuum,
+} from "./continuum.js";
