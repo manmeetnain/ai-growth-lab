@@ -96,12 +96,8 @@ calls on both specs, not just that it answers the handshake correctly.
 
 ## Install
 
-Not yet published to npm. Once cloned:
-
 ```bash
-cd continuum
-npm install
-npm run build
+npm install mcp-continuum
 ```
 
 ## Development
@@ -166,9 +162,9 @@ same wrapped server. Full results, per-server details, and what each one establi
 
 ## Status
 
-Not yet published to npm. See [`../CAPSTONE.md`](../CAPSTONE.md) for the full design and
-motivation, and follow [`../ROADMAP.md`](../ROADMAP.md)'s "Build pipeline checklist" for current
-build status.
+Published as [`mcp-continuum`](https://www.npmjs.com/package/mcp-continuum) on npm (`0.1.0`).
+See [`../CAPSTONE.md`](../CAPSTONE.md) for the full design and motivation, and follow
+[`../ROADMAP.md`](../ROADMAP.md)'s "Build pipeline checklist" for current build status.
 
 ## License
 

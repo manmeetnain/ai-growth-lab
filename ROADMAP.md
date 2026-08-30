@@ -39,7 +39,7 @@ they're next in line.
 - [ ] Comment on fastmcp issue #300 if relevant.
 - [ ] Reach out to the `mcp-spec-check` author for cross-linking.
 - [ ] Submit to registries (Glama, Smithery, PulseMCP, MCPfinder) and awesome-list PRs.
-- [ ] Publish to npm.
+- [x] Publish to npm.
 - [ ] Post in MCP Discord communities and r/mcp.
 - [ ] Show HN / X / LinkedIn / newsletter submissions.
 
