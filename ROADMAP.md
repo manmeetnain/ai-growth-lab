@@ -36,9 +36,17 @@ they're next in line.
 **— LAUNCH GATE: everything below requires explicit human approval before it happens —**
 
 - [x] Comment on Microsoft RFC #2597 with the working solution.
-- [ ] Comment on fastmcp issue #300 if relevant.
-- [ ] Reach out to the `mcp-spec-check` author for cross-linking.
-- [ ] Submit to registries (Glama, Smithery, PulseMCP, MCPfinder) and awesome-list PRs.
+- [x] Comment on fastmcp issue #300 if relevant. — evaluated, skipped: issue is closed, maintainer
+      already resolved it via a different project (vitemcp/server), and fastmcp's actual blockers
+      are framework-internal (Context/FastMCPSession reshaping), not the dual-stack wrapping
+      Continuum solves. Posting would be off-topic noise on a resolved thread.
+- [x] Reach out to the `mcp-spec-check` author for cross-linking.
+- [x] Submit to registries (Glama, Smithery, PulseMCP, MCPfinder) and awesome-list PRs. — evaluated,
+      skipped: checked all four registries plus 3 awesome-lists; every category on every one is
+      scoped to installable MCP *servers* (or, on Glama, individual tool-functions a server
+      exposes). Continuum is compatibility middleware, not a server — no real category fits, and
+      PulseMCP submissions are paused regardless. Forcing a listing would likely be rejected or
+      look out of place.
 - [x] Publish to npm.
 - [ ] Post in MCP Discord communities and r/mcp.
 - [ ] Show HN / X / LinkedIn / newsletter submissions.
