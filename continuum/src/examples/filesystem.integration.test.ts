@@ -10,7 +10,7 @@
  */
 import assert from "node:assert/strict";
 import { createServer, type Server as HttpServer } from "node:http";
-import { mkdtemp, writeFile, rm } from "node:fs/promises";
+import { mkdtemp, realpath, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
@@ -45,7 +45,11 @@ async function stop(http: HttpServer, wrapper: ReturnType<typeof continuum>): Pr
 }
 
 async function withSandbox(run: (sandboxDir: string) => Promise<void>): Promise<void> {
-  const sandboxDir = await mkdtemp(path.join(tmpdir(), "continuum-filesystem-example-"));
+  // Resolve to the real path before it's ever used: on macOS, tmpdir() sits behind a
+  // symlink (/var -> /private/var), and the real server-filesystem package's own
+  // symlink-confinement check compares realpaths, so an unresolved sandbox dir looks
+  // "outside" itself even for a file that's genuinely inside it.
+  const sandboxDir = await realpath(await mkdtemp(path.join(tmpdir(), "continuum-filesystem-example-")));
   try {
     await writeFile(path.join(sandboxDir, "hello.txt"), "hello from continuum\n", "utf8");
     await run(sandboxDir);
