@@ -127,7 +127,7 @@ Full-screen text card:
 
 ```
 mcp-continuum
-One server. Both specs. Zero-downtime migration.
+One server, dual-protocol compatibility, zero-downtime migration.
 
 github.com/manmeetnain/ai-growth-lab/tree/main/continuum
 ```
