@@ -2,8 +2,9 @@
 
 Maintained by **Manmeet Nain** ([@manmeetnain](https://github.com/manmeetnain)).
 
-A standalone initiative, independent of any other project or repo, built around one clear
-priority order: **money first, startup access second, recognition and network third.**
+An independent initiative, unaffiliated with any other project or repository, organized around
+a clear priority order: **revenue generation first, startup partnerships second, and
+professional recognition and network development third.**
 
 The bet: instead of scattering effort across many small projects, everything routes through
 **one flagship build** ("the capstone") that becomes the credibility asset for every other track
